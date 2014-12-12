@@ -25,12 +25,12 @@
  
   <main>
 
-  <!--   <div id="winner">{{ game.winner()}}</div> -->
+    <div id="winner">{{ game.winner}}</div>
     <div> It's player {{ room.playerNumber }}'s turn! </div>
 
 
     <div id = "container">
-      <div class="game-box" ng-repeat="box in game.board" ng-click="game.pickBox(box)">
+      <div class="game-box" ng-repeat="box in game.board track by $index" ng-click="game.pickBox($index)">
         {{ box.owner }}  
       </div>
     </div>
