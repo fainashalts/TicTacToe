@@ -1,0 +1,52 @@
+body {
+
+	background-color: #41837E;
+	font-family: 'Poiret One', cursive;
+	text-align: center;
+	color: #551D00;
+
+}
+
+p {
+	font-size: 20px;
+	font-weight: bold;
+	width: 560px;
+	margin: 0 auto;
+	padding: 10px;
+}
+/*.game-box {
+	display: inline-block;
+	height: 150px;
+	width: 150px;
+	margin: 3px;
+	border: 2px solid black;
+}*/
+
+#winner {
+	margin: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+
+#container {
+	text-align: center;
+	margin: 50px auto;
+	width: 380px;
+	height: 380px;
+	padding: 0;
+
+}
+.game-box {
+	border: 1px solid black;
+	display: inline-block;
+	width: 120px;
+	height: 120px;
+	margin: 0;
+	font-size: 100px;
+	vertical-align: top;
+	background: url(../images.jpeg);
+	margin: 2px;
+}
+#reset {
+	border-radius: 30%;
+}
