@@ -34,6 +34,8 @@ p {
 	width: 380px;
 	height: 380px;
 	padding: 0;
+	border: inset 5px #0E553E; 
+	background-color: #0E553E;
 
 }
 .game-box {

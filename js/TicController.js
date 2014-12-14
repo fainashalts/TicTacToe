@@ -4,203 +4,99 @@ angular
     .module("ticApp")
     .controller("TicController", TicController);
 
+// injecting firebase into the controller as a dependency
 TicController.$inject = ['$firebase'];
 
+// controller function
 function TicController($firebase) {
     var self= this; 
-    self.gameName = "TTT";
-    // self.turns = turns;
-    self.pickBox = pickBox;
-
-    self.winner = winner;   
    
-
-    self.board = getBoxes();
-    self.clearBoard = clearBoard;
-    self.gamePlay = getGamePlay(); 
-
+    self.getBoxes= getBoxes(); 
+    // self.getGamePlay = getGamePlay(); 
+    self.setBoard= setBoard; 
+    self.setGame= setGame; 
+    self.pickBox = pickBox; 
+    self.clearBoard = clearBoard; 
+    self.gamePlay = getGamePlay();
+   
 
     function getBoxes() {
         var sync = new Firebase("https://tictactech.firebaseio.com/gameBoard");
         sync.remove();
         var board = $firebase(sync).$asArray();
-        
-        board.$loaded().then(function(){
-            setBoard();
-
-
-        });
-        
-        return board;
-
-     
+        self.board = board;
+        return getBoxes; 
     }
 
+     //  actual gameboard
     function setBoard(){
-        console.log("Game Board Set!");
+        console.log("Game Board loaded!");
         for (var i=0; i<9; i++) {
             self.board.$add({index: i, owner: ""});
-        };
-    }
-    
-    
+        }
+    };
+
+
     function getGamePlay() {
-        var sync = new Firebase("https://tictactech.firebaseio.com/gamePlay");
-        var gamePlay = $firebase(sync).$asObject();
-        
-
-
-        gamePlay.$loaded().then(function() {
-            console.log("gamePlay loaded!");
-            self.gamePlay.turns= 1;
-            // self.gamePlay.numPlayers= 0;
-            self.gamePlay.$save();
-
-            setGame();
-            self.gamePlay.$save();
-
-
-        })
+        var ref = new Firebase("https://tictactech.firebaseio.com/gamePlay");
+        var gamePlay = $firebase(ref).$asObject();
         return gamePlay; 
     }
 
-    self.setGame= setGame();
-    function setGame () {
-        if(!self.gamePlay.numPlayers){
-            self.gamePlay.numPlayers = 0;
+    self.board.$loaded().then(function() {
+
+        setBoard();
+
+    });
+
+    self.gamePlay.$loaded().then(function(){
+        self.gamePlay.turns = 1; 
+        // self.gamePlay.numPlayers= null;
+        setGame();
+    })
+
+
+
+    function setGame() {
+        
+        if(!self.gamePlay.numPlayers) {
+            self.gamePlay.numPlayers = 0; 
             self.gamePlay.$save();
-            console.log("numPlayers set to 0")
-            }
+        }
 
-        
-
-         if(self.gamePlay.numPlayers == 1) {
-                self.playerID = self.gamePlay.numPlayers;
-                console.log("set playerID to 1");
-            }
-            else if (self.gamePlay.numPlayers === 2 && self.gamePlay.spectators === undefined) {
-                self.playerID = self.gamePlay.numPlayers;
-                console.log("set playerID to 2");
-            }
-            else {
-                self.playerID = "Spectator";
-                console.log("set playerID to spectator");
-            }
-            
-         self.gamePlay.numPlayers +=1; 
-         self.gamePlay.$save();
-
-        return setGame;
-    }
-
-// self.playerNumber = self.room.numPlayers;
-//             self.room.numPlayers +=1;
-//             self.room.$save();
-    
-
-    // function getLobby () { 
-  
-    //     var ref = $firebase(new Firebase("https://tictactech.firebaseio.com/gamePlay"));
-    //     var lobby = ref.$asObject();
-        
-    //     lobby.$save({name: "TicTacTechLobby", numPlayer: 0});
-    //     self.ref = ref;
-    //     self.lobby= lobby;
-    // }
-
-    
-    // self.getLobby= getLobby;
-    // getLobby();
-
-
- 
-
-
-  
-
-
-
-
-    // // var turns= 1;
-
-    // function playerTurn() {
-        
-    //         if (!self.gamePlay.numPlayers){
-    //             self.gamePlay.numPlayers = 0;
-    //             self.gamePlay.playerTurn= 1;
-    //             self.gamePlay.$save();
-            
-    //         self.playerNumber = self.room.numPlayers;
-    //         self.room.numPlayers +=1;
-    //         self.room.$save();
-    //     }
-
-   
-    // var sync = $firebase(new Firebase("https://tictactech.firebaseio.com/playerTurn"));
-    // var playerTurn = sync.$asObject();
-
-    // function getPlayer() {
-
-    //     }
-    // }
-
-    // self.getPlayer= getPlayer;
-    // function playerTurn (){
-    //     var ref = new Firebase("https://tictactech.firebaseio.com/player");
-    //     var player = $firebase(ref); 
-
-    //     function counter () {
-    //         if (player=1) {
-    //         player++;
-    //        }
-    //        else {
-    //         player--;
-    //        }
-    //     };
+        // self.playerID = self.gamePlay.numPlayers;
        
-    //     box.player.$save(box);
-           
-    //     return player;
-    //        // self.box.player.$save();
+        self.gamePlay.numPlayers ++;
+        self.gamePlay.$save();
 
-    // };
+        if(self.gamePlay.numPlayers == 1) {
+            self.playerID = self.gamePlay.numPlayers;
+            console.log ("First player set"); 
+            self.gamePlay.$save();
+        }
 
+        else if (self.gamePlay.numPlayers == 2) {
+            self.playerID = self.gamePlay.numPlayers; 
+            console.log("Second player set");
+            self.gamePlay.$save();
+        }
+
+        else {
+            self.playerID = "watcher"; 
+            console.log("May watch but can't play this time!"); 
+        } 
+
+        self.gamePlay.$save();
+        // return setGame; 
+    };
     
-    
-    // function player ($firebase) {
-    //     var player = function(playerName) {
-    //         var ref = new Firebase("https:/tictactech.firebaseio/players");
-    //         var firebasePlayer = $firebase(ref).$asObject();
 
-    //         self.firebasePlayer = firebasePlayer;
-
-    //         firebasePlayer.$loaded(function() {
-    //             createPlayers();
-    //         });
-    //         return player()
-    //     }
-
-    //     function createPlayers(){
-    //         if (firebasePlayer.playerCount===undefined) {
-    //             firebasePlayer.playerCount= 1; 
-    //             firebasePlayer.playerCount.$save(firebasePlayer);
-    //         }
-    //         else if (firebasePlayer.playerCount == 1) {
-    //             firebasePlayer.playerCount = 2
-    //             firebasePlayer.playerCount.$save(firebasePlayer);
-    //         }
-    //         else {
-    //             firebasePlayer.playerCount = undefined;
-    //         }
-    //     };
-    // }
-
-    
-    // var turns = 1;
     function pickBox($index) {
     
 
+            // self.gamePlay.turns = 1;
             self.gamePlay.turns++;
+            self.gamePlay.$save();
 
 
             // player = 1;
@@ -209,7 +105,7 @@ function TicController($firebase) {
                 if ((self.gamePlay.turns % 2 === 0) && (self.playerID == 1)) {
                     self.board[$index].owner = "X";
                     self.board.$save($index);
-                    self.gamePlay.$save();
+                    // self.gamePlay.$save();
                     // if (turns = 1) {
                     //     player= 1;
                     //     console.log("Player 1 assigned")
@@ -225,7 +121,7 @@ function TicController($firebase) {
                     // box.player.$save($index);
                     self.board[$index].owner = "O";
                     self.board.$save($index);
-                    self.gamePlay.$save();
+                    // self.gamePlay.$save();
 
                     // if (turns = 2){
                     //     player= 2
@@ -236,6 +132,7 @@ function TicController($firebase) {
                     // box.player.$save(box);
                     // playerTurn();
                     console.log($index);
+                    // self.gamePlay.$save();
                     winner();
                 }
 
@@ -244,7 +141,7 @@ function TicController($firebase) {
                 window.alert("Now now, you know you can't have that space! Pick another!");
             }
 
-            return self.gamePlay.owner;
+            // return self.gamePlay.owner;
             return pickBox; 
         // return player;
     }
@@ -327,7 +224,7 @@ function TicController($firebase) {
         self.board[7].owner = "";
         self.board[8].owner = "";
         self.gamePlay.turns= 1;
-        self.gamePlay.numPlayers = 0;
+        self.gamePlay.numPlayers = null;
         self.board.$save();
         self.gamePlay.$save();
         console.log("reset");
