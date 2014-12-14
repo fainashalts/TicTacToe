@@ -17,6 +17,7 @@ function TicController($firebase) {
 
     self.board = getBoxes();
     self.clearBoard = clearBoard;
+    self.gamePlay = getGamePlay(); 
 
 
     function getBoxes() {
@@ -26,6 +27,7 @@ function TicController($firebase) {
         
         board.$loaded().then(function(){
             setBoard();
+
 
         });
         
@@ -41,25 +43,64 @@ function TicController($firebase) {
         };
     }
     
-    self.gamePlay = getGamePlay(); 
+    
     function getGamePlay() {
         var sync = new Firebase("https://tictactech.firebaseio.com/gamePlay");
         var gamePlay = $firebase(sync).$asObject();
+        
+
 
         gamePlay.$loaded().then(function() {
-            console.log("connected!");
-            // gamePlay.turns = pickBox();
-            // gamePlay.$save();
-        })
+            console.log("gamePlay loaded!");
+            self.gamePlay.turns= 1;
+            // self.gamePlay.numPlayers= 0;
+            self.gamePlay.$save();
 
-        return gamePlay;
+            setGame();
+            self.gamePlay.$save();
+
+
+        })
+        return gamePlay; 
     }
 
+    self.setGame= setGame();
+    function setGame () {
+        if(!self.gamePlay.numPlayers){
+            self.gamePlay.numPlayers = 0;
+            self.gamePlay.$save();
+            console.log("numPlayers set to 0")
+            }
+
+        
+
+         if(self.gamePlay.numPlayers == 1) {
+                self.playerID = self.gamePlay.numPlayers;
+                console.log("set playerID to 1");
+            }
+            else if (self.gamePlay.numPlayers === 2 && self.gamePlay.spectators === undefined) {
+                self.playerID = self.gamePlay.numPlayers;
+                console.log("set playerID to 2");
+            }
+            else {
+                self.playerID = "Spectator";
+                console.log("set playerID to spectator");
+            }
+            
+         self.gamePlay.numPlayers +=1; 
+         self.gamePlay.$save();
+
+        return setGame;
+    }
+
+// self.playerNumber = self.room.numPlayers;
+//             self.room.numPlayers +=1;
+//             self.room.$save();
     
 
     // function getLobby () { 
   
-    //     var ref = $firebase(new Firebase("https://tictactech.firebaseio.com/lobby"));
+    //     var ref = $firebase(new Firebase("https://tictactech.firebaseio.com/gamePlay"));
     //     var lobby = ref.$asObject();
         
     //     lobby.$save({name: "TicTacTechLobby", numPlayer: 0});
@@ -80,15 +121,15 @@ function TicController($firebase) {
 
 
 
-    // var turns= 1;
+    // // var turns= 1;
 
     // function playerTurn() {
-    //     for (var i= 1; i<3; i++) {
-    //         if (!self.lobby.numPlayers){
-    //             self.lobby.numPlayers = 0;
-    //             self.lobby.playerTurn= 1;
-    //             self.lobby.$save();
-    //         }
+        
+    //         if (!self.gamePlay.numPlayers){
+    //             self.gamePlay.numPlayers = 0;
+    //             self.gamePlay.playerTurn= 1;
+    //             self.gamePlay.$save();
+            
     //         self.playerNumber = self.room.numPlayers;
     //         self.room.numPlayers +=1;
     //         self.room.$save();
@@ -163,12 +204,16 @@ function TicController($firebase) {
 
 
             // player = 1;
-
+            // self.player = 0;
             if (self.board[$index].owner === "") {
-                if (self.gamePlay.turns % 2 === 0) {
+                if ((self.gamePlay.turns % 2 === 0) && (self.playerID == 1)) {
                     self.board[$index].owner = "X";
                     self.board.$save($index);
                     self.gamePlay.$save();
+                    // if (turns = 1) {
+                    //     player= 1;
+                    //     console.log("Player 1 assigned")
+                    // }
 
                     // player++
                     // box.player.$save($index);
@@ -176,11 +221,16 @@ function TicController($firebase) {
                     console.log($index);
                     winner();
                 }
-                else {
+                else if ((self.gamePlay.turns % 2 === 1) && (self.playerID == 2)){
                     // box.player.$save($index);
                     self.board[$index].owner = "O";
                     self.board.$save($index);
-                    self.gamePlay.$save()
+                    self.gamePlay.$save();
+
+                    // if (turns = 2){
+                    //     player= 2
+                    //     console.log("Player 2 assigned")
+                    // }
 
                     // player--
                     // box.player.$save(box);
@@ -193,10 +243,13 @@ function TicController($firebase) {
             else {
                 window.alert("Now now, you know you can't have that space! Pick another!");
             }
+
+            return self.gamePlay.owner;
+            return pickBox; 
         // return player;
     }
-    var owner;
-    var winner;
+    // var owner;
+    // var winner;
 
 
 // still need a way to stop the function running if a win occurs
@@ -274,9 +327,11 @@ function TicController($firebase) {
         self.board[7].owner = "";
         self.board[8].owner = "";
         self.gamePlay.turns= 1;
+        self.gamePlay.numPlayers = 0;
         self.board.$save();
         self.gamePlay.$save();
         console.log("reset");
+    return self.clearBoard;
     }
 
 
