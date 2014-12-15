@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html ng-app="ticApp">
+<html ng-app="ticApp"> 
 <head>
   <title>TicTacToeGame</title>
   <link rel="stylesheet" href="css/style.css">
-  <link href="http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Arvo:400,700" rel="stylesheet" type="text/css"> 
 
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
 
   <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
 				<script src="https://cdn.firebase.com/libs/angularfire/0.9.0/angularfire.min.js"></script>
@@ -18,27 +18,21 @@
 <body ng-controller="TicController as game">
 
   <header>
-  <h1>TIC TAC TECH</h1>
-  <button ng-click="game.clearBoard()">Start New Game!</button>
-  <p> Pick a box and try to win by getting three in a row!</p>
+    <h1>TIC TAC TOE</h1>
+    <div id="playerinfo"> {{game.message}} </div>
+    <div id="winner">{{ game.gamePlay.winner }}</div>
   </header>
 
- 
   <main>
 
-    <div id="winner">{{ game.gamePlay.winner }}</div>
-    <div> {{game.message}} </div>
-
+    <div id="winCounter">{{game.gamePlay.playerName}} Player One Wins: {{game.gamePlay.winCounterOne}}<br> {{game.gamePlay.playerName}} Player Two Wins: {{game.gamePlay.winCounterTwo}} </div>
 
     <div id = "container">
       <div class="game-box" ng-repeat="box in game.board track by $index" ng-click="game.pickBox($index)">
         {{ box.owner }}  
       </div>
     </div>
-
-
-
-    <!--  <button id="reset" ng-click="game.clearBoard()">Reset to play a new game!</button> -->
+    <button  ng-click="game.clearBoard()">Start A Game!</button>
      
   </main>
 

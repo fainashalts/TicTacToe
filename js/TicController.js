@@ -11,16 +11,20 @@ TicController.$inject = ['$firebase'];
 function TicController($firebase) {
     var self= this; 
    
-    self.getBoxes= getBoxes(); 
-    // self.getGamePlay = getGamePlay(); 
+    self.getBoxes= getBoxes();  
     self.setBoard= setBoard; 
     self.setGame= setGame; 
     self.pickBox = pickBox; 
     self.clearBoard = clearBoard; 
     self.gamePlay = getGamePlay();
     self.winnerFunc = winnerFunc;
-   
 
+ 
+
+
+
+
+    // function to sync game board with Firebase
     function getBoxes() {
         var sync = new Firebase("https://tictactech.firebaseio.com/gameBoard");
         sync.remove();
@@ -37,13 +41,14 @@ function TicController($firebase) {
         }
     };
 
-
+    // function to sync game logic to Firebase
     function getGamePlay() {
         var ref = new Firebase("https://tictactech.firebaseio.com/gamePlay");
         var gamePlay = $firebase(ref).$asObject();
         return gamePlay; 
     }
 
+    // loads game board when page loaded
     self.board.$loaded().then(function() {
 
         setBoard();
@@ -51,193 +56,159 @@ function TicController($firebase) {
 
     });
 
+    // loads gamePlay elements and turns and winner starting values
     self.gamePlay.$loaded().then(function(){
         self.gamePlay.turns = 1; 
         self.gamePlay.winner= "";
-        // self.gamePlay.numPlayers= null;
+        // self.gamePlay.winCounterOne= 0;
+        // self.gamePlay.winCounterTwo= 0;
         setGame();
     })
 
 
-
+    // game play function, setting local player variables and spectators when player count above 2
     function setGame() {
+        
+        // start numPlayers at 0 if no players; won't run if there are already players in the room
         
         if(!self.gamePlay.numPlayers) {
             self.gamePlay.numPlayers = 0; 
             self.gamePlay.$save();
         }
 
-        // self.playerID = self.gamePlay.numPlayers;
+       
+        // increments numPlayers each time this function runs (which should be each time that a new players enters)
        
         self.gamePlay.numPlayers ++;
         self.gamePlay.$save();
 
+        // if else statemet assigning local variables for player one, player two, and watcher
         if(self.gamePlay.numPlayers == 1) {
             self.playerID = self.gamePlay.numPlayers;
             console.log ("First player set"); 
             self.gamePlay.$save();
+            self.message = "You are Player One! Get 3 X's in a row to win!"
         }
 
         else if (self.gamePlay.numPlayers == 2) {
             self.playerID = self.gamePlay.numPlayers; 
             console.log("Second player set");
             self.gamePlay.$save();
+            self.message = "You are Player Two! Get 3 O's in a row to win!"
         }
 
         else {
             self.playerID = "watcher"; 
             console.log("May watch but can't play this time!"); 
+            self.message = "Sorry, the game is full! Feel free to watch!"
         } 
 
         self.gamePlay.$save();
-        // return setGame; 
+        return setGame; 
     };
     
-
+    // turn sequence function, assigns X or O to the square depending on whether turns are even or odd (turns start at 1 when page loads, and increment up)
     function pickBox($index) {
-    
 
-            // self.gamePlay.turns = 1;
             self.gamePlay.turns++;
             self.gamePlay.$save();
 
-
-            // player = 1;
-            // self.player = 0;
             if (self.board[$index].owner === "") {
                 if ((self.gamePlay.turns % 2 === 0) && (self.playerID == 1)) {
                     self.board[$index].owner = "X";
                     self.board.$save($index);
-                    // self.gamePlay.$save();
-                    // if (turns = 1) {
-                    //     player= 1;
-                    //     console.log("Player 1 assigned")
-                    // }
-
-                    // player++
-                    // box.player.$save($index);
-                    // playerTurn();
                     console.log($index);
-                    // winnerFunc();
+                   
                 }
                 else if ((self.gamePlay.turns % 2 === 1) && (self.playerID == 2)){
-                    // box.player.$save($index);
                     self.board[$index].owner = "O";
                     self.board.$save($index);
-                    // self.gamePlay.$save();
-
-                    // if (turns = 2){
-                    //     player= 2
-                    //     console.log("Player 2 assigned")
-                    // }
-
-                    // player--
-                    // box.player.$save(box);
-                    // playerTurn();
                     console.log($index);
-                    // self.gamePlay.$save();
-                    // winnerFunc();
+
                 }
 
             }
             else {
-                window.alert("Now now, you know you can't have that space! Pick another!");
+                window.alert("Now now, that space is taken! Pick another!");
             }
 
-            // return self.gamePlay.owner;
             winnerFunc();
+            self.gamePlay.$save();
             return pickBox; 
-        // return player;
     }
-    // var owner;
-    // var winner;
 
 
-// still need a way to stop the function running if a win occurs
+    self.winCounterFunc = winCounterFunc
+    function winCounterFunc() {
+        if (!self.gamePlay.winCounterOne) {
+            self.gamePlay.winCounterOne = 0;
+        }
+        if (!self.gamePlay.winCounterTwo) {
+            self.gamePlay.winCounterTwo = 0;
+        }
+    }
+// win logic
     function winnerFunc() {
-        if (self.board[0].owner == "X" && self.board[1].owner == "X" && self.board[2].owner == "X") {
+        winCounterFunc();
+        if (
+        (self.board[0].owner == "X" && self.board[1].owner == "X" && self.board[2].owner == "X") ||
+        (self.board[3].owner == "X" && self.board[4].owner == "X" && self.board[5].owner == "X") ||
+        (self.board[6].owner == "X" && self.board[7].owner == "X" && self.board[8].owner == "X") ||
+        (self.board[0].owner == "X" && self.board[3].owner == "X" && self.board[6].owner == "X") ||
+        (self.board[1].owner == "X" && self.board[4].owner == "X" && self.board[7].owner == "X") ||
+        (self.board[2].owner == "X" && self.board[5].owner == "X" && self.board[8].owner == "X") ||
+        (self.board[0].owner == "X" && self.board[4].owner == "X" && self.board[8].owner == "X") ||
+        (self.board[2].owner == "X" && self.board[4].owner == "X" && self.board[6].owner == "X")) {
             self.gamePlay.winner ="PLAYER ONE WINS!";
-            console.log("player one!");
+            self.gamePlay.winCounterOne+=1
             self.gamePlay.$save();
+           
+           
         }
-        else if (self.board[3].owner == "X" && self.board[4].owner == "X" && self.board[5].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[6].owner == "X" && self.board[7].owner == "X" && self.board[8].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[0].owner == "X" && self.board[3].owner == "X" && self.board[6].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[1].owner == "X" && self.board[4].owner == "X" && self.board[7].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[2].owner == "X" && self.board[5].owner == "X" && self.board[8].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[0].owner == "X" && self.board[4].owner == "X" && self.board[8].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[2].owner == "X" && self.board[4].owner == "X" && self.board[6].owner == "X") {
-            self.gamePlay.winner ="PLAYER ONE WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[0].owner == "O" && self.board[1].owner == "O" && self.board[2].owner == "O") {
+
+        else if (
+        (self.board[0].owner == "O" && self.board[1].owner == "O" && self.board[2].owner == "O") ||
+        (self.board[3].owner == "O" && self.board[4].owner == "O" && self.board[5].owner == "O") ||
+        (self.board[6].owner == "O" && self.board[7].owner == "O" && self.board[8].owner == "O") ||
+        (self.board[0].owner == "O" && self.board[3].owner == "O" && self.board[6].owner == "O") ||
+        (self.board[1].owner == "O" && self.board[4].owner == "O" && self.board[7].owner == "O") ||
+        (self.board[2].owner == "O" && self.board[5].owner == "O" && self.board[8].owner == "O") ||
+        (self.board[0].owner == "O" && self.board[4].owner == "O" && self.board[8].owner == "O") ||
+        (self.board[2].owner == "O" && self.board[4].owner == "O" && self.board[6].owner == "O")) {
             self.gamePlay.winner ="PLAYER TWO WINS!";
             self.gamePlay.$save();
+            self.gamePlay.winCounterTwo+=1;
+           
+           
         }
-        else if (self.board[3].owner == "O" && self.board[4].owner == "O" && self.board[5].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[6].owner == "O" && self.board[7].owner == "O" && self.board[8].owner == "O") {
-            self.gamePlay.winner="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[0].owner == "O" && self.board[3].owner == "O" && self.board[6].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[1].owner == "O" && self.board[4].owner == "O" && self.board[7].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[2].owner == "O" && self.board[5].owner == "O" && self.board[8].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[0].owner == "O" && self.board[4].owner == "O" && self.board[8].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if (self.board[2].owner == "O" && self.board[4].owner == "O" && self.board[6].owner == "O") {
-            self.gamePlay.winner ="PLAYER TWO WINS!";
-            self.gamePlay.$save();
-        }
-        else if(self.gamePlay.turns == 10){
+
+        else if(self.gamePlay.turns == 19){
             self.gamePlay.winner= "It's a tie! Wow!";
             self.gamePlay.$save();
+            
         }
+
         else if (self.gamePlay.turns % 2 == 0) {
             self.gamePlay.winner = "PLAYER TWO, PICK A BOX!";
             self.gamePlay.$save();
-        } else {
+        } 
+
+        else {
             self.gamePlay.winner = "PLAYER ONE, PICK A BOX";
             self.gamePlay.$save();
         }
+
         return self.gamePlay.winner;
         self.gamePlay.$save();
     }
 
 
-// for loop this 
+
     function clearBoard() {
+        // attempt to keep numPlayers from resetting again after setting player 1
+        if (self.gamePlay.numPlayers !== 1) {
+            self.gamePlay.numPlayers = null;
+        }
         self.board[0].owner = "";
         self.board[1].owner = "";
         self.board[2].owner = "";
@@ -247,12 +218,18 @@ function TicController($firebase) {
         self.board[6].owner = "";
         self.board[7].owner = "";
         self.board[8].owner = "";
-        self.gamePlay.turns= 1;
-        self.gamePlay.numPlayers = null;
         self.board.$save();
+        self.gamePlay.turns= 1;
+        // self.gamePlay.numPlayers = null;
         self.gamePlay.$save();
+        location.reload();
         console.log("reset");
-    return self.clearBoard;
+
+    
+
+
+
+        return self.clearBoard;
     }
 
 

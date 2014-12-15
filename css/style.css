@@ -1,54 +1,112 @@
+
 body {
 
-	background-color: #41837E;
-	font-family: 'Poiret One', cursive;
+	background-color: #29506D;
+	font-family: 'Arvo', serif;
 	text-align: center;
-	color: #551D00;
-
+	color: #051A38;
 }
 
-p {
-	font-size: 20px;
+h1 { 
 	font-weight: bold;
-	width: 560px;
-	margin: 0 auto;
-	padding: 10px;
+	font-size: 60px;
 }
-/*.game-box {
+
+main {
+	width: 500px;
 	display: inline-block;
-	height: 150px;
-	width: 150px;
-	margin: 3px;
-	border: 2px solid black;
-}*/
+}
+#playerinfo {
+	font-weight: bold;
+	font-size: 30px;
+}
 
 #winner {
 	margin: 20px;
 	text-align: center;
 	font-weight: bold;
+	font-size: 40px;
+	color: #D4AD6A;
 }
 
 #container {
 	text-align: center;
 	margin: 50px auto;
-	width: 380px;
-	height: 380px;
+	width: 440px;
+	height: 440px;
 	padding: 0;
-	border: inset 5px #0E553E; 
-	background-color: #0E553E;
+	border: inset 20px #758AA8; 
+	background-color: #758AA8;
+	border-radius: 5%;
 
 }
 .game-box {
 	border: 1px solid black;
 	display: inline-block;
-	width: 120px;
-	height: 120px;
+	width: 140px;
+	height: 140px;
 	margin: 0;
 	font-size: 100px;
 	vertical-align: top;
-	background: url(../images.jpeg);
+	background: url(../space3.jpeg);
 	margin: 2px;
+	border-radius: 10%;
+	color: #D4AD6A;
+	cursor: pointer;
+
 }
+
+.game-box:hover { 
+	background: black;
+} 
+
 #reset {
 	border-radius: 30%;
+}
+
+#player1 {
+	display: inline;
+	clear: right;
+	position: relative;
+	margin-left: 60px;
+}
+#player2 {
+	display: inline;
+	clear: right;
+	position: relative;
+	margin-right: 60px;
+
+}
+
+#wincount {
+	float: left;
+}
+
+.active {
+	background: url(../earth.jpeg);
+}
+.inactive {
+	background: url(../saturn.jpg);
+}
+button {
+	cursor: pointer;
+	width: 180px; 
+	height: 50px;
+	border-radius: 5%;
+	background-color: #758AA8;
+	color: #051A38;
+	font-weight: bold;
+	font-size: 15px;
+	border: solid 6px #051A38;
+	border-radius: 8%;
+}
+#winCounter {
+	font-weight: bold;
+	font-size: 25px;
+}
+#name-btn { 
+	cursor: pointer;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
 }
