@@ -18,15 +18,16 @@
 <body ng-controller="TicController as game">
 
   <header>
-  <h1>TIC TAC TOE</h1>
-  <p> You know the rules. Get three squares in a row and you win the game!</p>
+  <h1>TIC TAC TECH</h1>
+  <button ng-click="game.clearBoard()">Start New Game!</button>
+  <p> Pick a box and try to win by getting three in a row!</p>
   </header>
 
  
   <main>
 
-    <div id="winner">{{ game.winner}}</div>
-    <div> It's player {{ game.playerID }}'s turn! </div>
+    <div id="winner">{{ game.gamePlay.winner }}</div>
+    <div> {{game.message}} </div>
 
 
     <div id = "container">
@@ -35,7 +36,9 @@
       </div>
     </div>
 
-     <button id="reset" ng-click="game.clearBoard()">Reset to play a new game!</button>
+
+
+    <!--  <button id="reset" ng-click="game.clearBoard()">Reset to play a new game!</button> -->
      
   </main>
 
