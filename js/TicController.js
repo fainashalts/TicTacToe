@@ -182,7 +182,7 @@ function TicController($firebase) {
            
         }
 
-        else if(self.gamePlay.turns == 19){
+        else if(self.gamePlay.turns == 20){
             self.gamePlay.winner= "It's a tie! Wow!";
             self.gamePlay.$save();
             
