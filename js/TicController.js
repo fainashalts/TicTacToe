@@ -110,7 +110,7 @@ function TicController($firebase) {
     // turn sequence function, assigns X or O to the square depending on whether turns are even or odd (turns start at 1 when page loads, and increment up)
     function pickBox($index) {
 
-            self.gamePlay.turns++;
+            
             self.gamePlay.$save();
 
             if (self.board[$index].owner === "") {
@@ -118,12 +118,14 @@ function TicController($firebase) {
                     self.board[$index].owner = "X";
                     self.board.$save($index);
                     console.log($index);
+                    self.gamePlay.turns++;
                    
                 }
                 else if ((self.gamePlay.turns % 2 === 1) && (self.playerID == 2)){
                     self.board[$index].owner = "O";
                     self.board.$save($index);
                     console.log($index);
+                    self.gamePlay.turns++;
 
                 }
 
