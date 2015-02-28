@@ -26,7 +26,7 @@ function TicController($firebase) {
 
     // function to sync game board with Firebase
     function getBoxes() {
-        var sync = new Firebase("https://tictactech.firebaseio.com/gameBoard");
+        var sync = new Firebase("https://tictacfaina.firebaseio.com/gameBoard");
         sync.remove();
         var board = $firebase(sync).$asArray();
         self.board = board;
@@ -43,7 +43,8 @@ function TicController($firebase) {
 
     // function to sync game logic to Firebase
     function getGamePlay() {
-        var ref = new Firebase("https://tictactech.firebaseio.com/gamePlay");
+        
+        var ref = new Firebase("https://tictacfaina.firebaseio.com/gamePlay");
         var gamePlay = $firebase(ref).$asObject();
         return gamePlay; 
     }
@@ -58,7 +59,7 @@ function TicController($firebase) {
 
     // loads gamePlay elements and turns and winner starting values
     self.gamePlay.$loaded().then(function(){
-        self.gamePlay.turns = 1; 
+        self.gamePlay.turns = 0; 
         self.gamePlay.winner= "";
         // self.gamePlay.winCounterOne= 0;
         // self.gamePlay.winCounterTwo= 0;
@@ -98,7 +99,7 @@ function TicController($firebase) {
         }
 
         else {
-            self.playerID = "watcher"; 
+            self.playerID = Math.floor((self.gamePlay.numPlayers-1)/2); 
             console.log("May watch but can't play this time!"); 
             self.message = "Sorry, the game is full! Feel free to watch!"
         } 
@@ -163,6 +164,7 @@ function TicController($firebase) {
         (self.board[2].owner == "X" && self.board[4].owner == "X" && self.board[6].owner == "X")) {
             self.gamePlay.winner ="PLAYER ONE WINS!";
             self.gamePlay.winCounterOne+=1
+            self.endGame = true;
             self.gamePlay.$save();
            
            
@@ -179,24 +181,26 @@ function TicController($firebase) {
         (self.board[2].owner == "O" && self.board[4].owner == "O" && self.board[6].owner == "O")) {
             self.gamePlay.winner ="PLAYER TWO WINS!";
             self.gamePlay.$save();
+            self.endGame = true;
             self.gamePlay.winCounterTwo+=1;
            
            
         }
 
-        else if(self.gamePlay.turns == 20){
+        else if(self.gamePlay.turns == 9){
             self.gamePlay.winner= "It's a tie! Wow!";
+            self.endGame = true;
             self.gamePlay.$save();
             
         }
 
         else if (self.gamePlay.turns % 2 == 0) {
-            self.gamePlay.winner = "PLAYER TWO, PICK A BOX!";
+            self.gamePlay.winner = "PLAYER ONE, PICK A BOX!";
             self.gamePlay.$save();
         } 
 
         else {
-            self.gamePlay.winner = "PLAYER ONE, PICK A BOX";
+            self.gamePlay.winner = "PLAYER TWO, PICK A BOX";
             self.gamePlay.$save();
         }
 

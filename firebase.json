@@ -1,5 +1,5 @@
 {
-  "firebase": "tictactech",
+  "firebase": "tictacfaina",
   "public": ".",
   "ignore": [
     "firebase.json",
